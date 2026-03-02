@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
+  <title>💪 Gym Tracker Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-exercise: #0f172a;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-green: #10b981;
+      --accent-green-dark: #059669;
+      --accent-blue: #3b82f6;
+      --accent-orange: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+      --border-color: #334155;
+      --border-light: #475569;
+      --gradient-primary: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 50px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      overscroll-behavior: none;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+      padding: 0;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    /* Header Principal */
+    .app-header {
+      background: var(--bg-secondary);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(20px);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .app-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .header-stats {
+      text-align: right;
+    }
+
+    .current-day-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .current-day-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+
+    /* Container principal */
+    .app-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Navegación de días */
+    .day-navigation {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 6px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .day-tab {
+      flex: 1;
+      padding: 12px 8px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .day-tab:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .day-tab.active {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .day-tab.rest-day {
+      opacity: 0.5;
+    }
+
+    .day-tab.rest-day.active {
+      background: var(--accent-orange);
+      opacity: 1;
+    }
+
+    .day-tab-short {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .day-tab-type {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      opacity: 0.8;
+    }
+
+    /* Timer Card */
+    .timer-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .timer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .timer-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .timer-title-icon {
+      font-size: 18px;
+    }
+
+    .timer-display-container {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .timer-display {
+      font-size: 56px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .timer-display.running {
+      animation: pulse-timer 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse-timer {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .timer-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .timer-btn {
+      padding: 14px 8px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .timer-btn:hover, .timer-btn:active {
+      background: var(--border-color);
+      transform: scale(0.98);
+    }
+
+    .timer-btn.stop {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      color: white;
+    }
+
+    .timer-btn.stop:hover {
+      background: #dc2626;
+    }
+
+    /* Progress Card */
+    .progress-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .progress-value {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent-green);
+    }
+
+    .progress-bar-bg {
+      height: 10px;
+      background: var(--bg-primary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Workout Section */
+    .workout-section {
+      margin-bottom: 20px;
+    }
+
+    .workout-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .workout-title-icon {
+      font-size: 24px;
+    }
+
+    /* Rest Day Card */
+    .rest-day-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 40px 20px;
+      text-align: center;
+      border: 2px dashed var(--accent-orange);
+    }
+
+    .rest-day-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .rest-day-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent-orange);
+      margin-bottom: 8px;
+    }
+
+    .rest-day-message {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Exercise Card */
+    .exercise-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .exercise-card.completed {
+      border-color: var(--accent-green);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    .exercise-header {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .exercise-number {
+      width: 32px;
+      height: 32px;
+      background: var(--gradient-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .exercise-card.completed .exercise-number {
+      background: var(--accent-green);
+    }
+
+    .exercise-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .exercise-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+
+    .exercise-target {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .exercise-check {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+
+    .exercise-card.completed .exercise-check {
+      display: flex;
+    }
+
+    /* Series Grid */
+    .series-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      padding: 0;
+    }
+
+    .serie-item {
+      padding: 16px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border-right: 1px solid var(--border-color);
+      background: var(--bg-exercise);
+      position: relative;
+      user-select: none;
+    }
+
+    .serie-item:last-child {
+      border-right: none;
+    }
+
+    .serie-item:active {
+      transform: scale(0.95);
+    }
+
+    .serie-item.done {
+      background: var(--accent-green);
+    }
+
+    .serie-item.done .serie-number,
+    .serie-item.done .serie-reps,
+    .serie-item.done .serie-label {
+      color: white;
+    }
+
+    .serie-number {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .serie-reps {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .serie-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .serie-checkmark {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .serie-item.done .serie-checkmark {
+      opacity: 1;
+    }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .footer-quote {
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .footer-btn {
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .footer-btn:hover {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .footer-btn.danger {
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+
+    .footer-btn.danger:hover {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    /* Overlay de descanso */
+    .rest-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .rest-overlay.active {
+      display: flex;
+    }
+
+    .rest-overlay-content {
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .rest-overlay-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .rest-overlay-time {
+      font-size: 100px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+
+    .rest-overlay-message {
+      font-size: 20px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      font-weight: 500;
+    }
+
+    .rest-overlay-btn {
+      padding: 16px 48px;
+      background: var(--accent-red);
+      border: none;
+      border-radius: var(--radius-full);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .rest-overlay-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Completion Celebration */
+    .celebration {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .celebration.active {
+      display: flex;
+    }
+
+    .celebration-emoji {
+      font-size: 80px;
+      margin-bottom: 24px;
+      animation: celebrate 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes celebrate {
+      from { transform: scale(1) rotate(-5deg); }
+      to { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .celebration-title {
+      font-size: 32px;
+      font-weight: 900;
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .celebration-text {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .celebration-btn {
+      padding: 16px 48px;
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: var(--radius-full);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    /* Animations */
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="app-logo">
+        <div class="logo-icon">💪</div>
+        <div>
+          <div class="logo-text">GYM TRACKER</div>
+          <div class="logo-subtitle">4 Series • 12-10-8-8 reps</div>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="current-day-label">Hoy</div>
+        <div class="current-day-name" id="currentDayName">Lunes</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <!-- Day Navigation -->
+    <nav class="day-navigation" id="dayNav"></nav>
+
+    <!-- Timer -->
+    <section class="timer-card">
+      <div class="timer-header">
+        <div class="timer-title">
+          <span class="timer-title-icon">⏱️</span>
+          <span>Descanso entre series</span>
+        </div>
+      </div>
+      <div class="timer-display-container">
+        <div class="timer-display" id="timerDisplay">00:00</div>
+      </div>
+      <div class="timer-buttons">
+        <button class="timer-btn" onclick="startTimer(60)">1:00</button>
+        <button class="timer-btn" onclick="startTimer(90)">1:30</button>
+        <button class="timer-btn" onclick="startTimer(120)">2:00</button>
+        <button class="timer-btn stop" onclick="stopTimer()">⏹</button>
+      </div>
+    </section>
+
+    <!-- Progress -->
+    <section class="progress-card">
+      <div class="progress-header">
+        <span class="progress-label">📊 Progreso del día</span>
+        <span class="progress-value" id="progressValue">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+      </div>
+    </section>
+
+    <!-- Workout Content -->
+    <section class="workout-section" id="workoutContent"></section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-quote">"La constancia supera al talento"</div>
+      <div>💪 ¡Sigue adelante, campeón!</div>
+      <div class="footer-actions">
+        <button class="footer-btn danger" onclick="resetDayProgress()">🔄 Reiniciar día</button>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Rest Overlay -->
+  <div class="rest-overlay" id="restOverlay">
+    <div class="rest-overlay-content">
+      <div class="rest-overlay-icon">😤</div>
+      <div class="rest-overlay-time" id="restTime">00:00</div>
+      <div class="rest-overlay-message">Descansando...</div>
+      <button class="rest-overlay-btn" onclick="stopTimer()">Terminar descanso</button>
+    </div>
+  </div>
+
+  <!-- Celebration -->
+  <div class="celebration" id="celebration">
+    <div class="celebration-emoji">🏆</div>
+    <div class="celebration-title">¡ENTRENAMIENTO COMPLETO!</div>
+    <div class="celebration-text">Has terminado todas las series de hoy</div>
+    <button class="celebration-btn" onclick="closeCelebration()">¡Genial!</button>
+  </div>
+
+  <script>
+    // ==================== RUTINA SEMANAL ====================
+    const ROUTINE = {
+      1: { // Lunes
+        name: 'Espalda, Bíceps & Tríceps',
+        icon: '🦾',
+        type: 'PULL',
+        exercises: [
+          { name: 'Polea al pecho', target: 'Dorsales' },
+          { name: 'Polea al pecho agarre estrecho', target: 'Dorsales / Centro espalda' },
+          { name: 'Remo en polea', target: 'Espalda media' },
+          { name: 'Bíceps con barra frontal', target: 'Bíceps' },
+          { name: 'Bíceps agarre martillo', target: 'Bíceps / Braquial' },
+          { name: 'Bíceps agarre frontal', target: 'Bíceps' },
+          { name: 'Tríceps', target: 'Tríceps' },
+          { name: 'Abdominales', target: 'Core' }
+        ]
+      },
+      2: { // Martes
+        name: 'Pecho, Hombros & Piernas',
+        icon: '🏋️',
+        type: 'PUSH/LEGS',
+        exercises: [
+          { name: 'Press de pecho', target: 'Pecho' },
+          { name: 'Aperturas laterales en máquina', target: 'Pecho' },
+          { name: 'Hombros con mancuernas', target: 'Deltoides' },
+          { name: 'Prensa de piernas', target: 'Cuádriceps / Glúteos' },
+          { name: 'Músculos posteriores del muslo', target: 'Isquiotibiales' },
+          { name: 'Parte frontal de las piernas', target: 'Cuádriceps' },
+          { name: 'Abdominales', target: 'Core' }
+        ]
+      },
+      3: { // Miércoles
+        name: 'Día de Descanso',
+        icon: '😴',
+        type: 'REST',
+        isRest: true,
+        exercises: []
+      },
+      4: { // Jueves
+        name: 'Espalda, Bíceps & Tríceps',
+        icon: '🦾',
+        type: 'PULL',
+        exercises: [
+          { name: 'Polea al pecho', target: 'Dorsales' },
+          { name: 'Polea al pecho agarre estrecho', target: 'Dorsales / Centro espalda' },
+          { name: 'Remo en polea', target: 'Espalda media' },
+          { name: 'Bíceps con barra frontal', target: 'Bíceps' },
+          { name: 'Bíceps agarre martillo', target: 'Bíceps / Braquial' },
+          { name: 'Bíceps agarre frontal', target: 'Bíceps' },
+          { name: 'Tríceps', target: 'Tríceps' },
+          { name: 'Abdominales', target: 'Core' }
+        ]
+      },
+      5: { // Viernes
+        name: 'Pecho, Hombros & Piernas',
+        icon: '🏋️',
+        type: 'PUSH/LEGS',
+        exercises: [
+          { name: 'Press de pecho', target: 'Pecho' },
+          { name: 'Aperturas laterales en máquina', target: 'Pecho' },
+          { name: 'Hombros con mancuernas', target: 'Deltoides' },
+          { name: 'Prensa de piernas', target: 'Cuádriceps / Glúteos' },
+          { name: 'Músculos posteriores del muslo', target: 'Isquiotibiales' },
+          { name: 'Parte frontal de las piernas', target: 'Cuádriceps' },
+          { name: 'Abdominales', target: 'Core' }
+        ]
+      },
+      6: { // Sábado
+        name: 'Full Body',
+        icon: '🔥',
+        type: 'FULLBODY',
+        exercises: [
+          { name: 'Press de pecho con barra/máquina', target: 'Pecho' },
+          { name: 'Remo en polea (espalda media)', target: 'Espalda' },
+          { name: 'Aperturas pecho (máquina/mancuernas)', target: 'Pecho' },
+          { name: 'Elevaciones de hombro', target: 'Deltoides' },
+          { name: 'Prensa de piernas', target: 'Piernas' },
+          { name: 'Curl de bíceps (barra/mancuernas)', target: 'Bíceps' },
+          { name: 'Extensión de tríceps en polea', target: 'Tríceps' },
+          { name: 'Abdominales controlados', target: 'Core' }
+        ]
+      }
+    };
+
+    const SERIES_REPS = [12, 10, 8, 8];
+    const DAY_NAMES = ['', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const DAY_FULL_NAMES = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    // ==================== ESTADO ====================
+    let currentDay = new Date().getDay();
+    if (currentDay === 0) currentDay = 1; // Domingo → Lunes
+    if (currentDay > 6) currentDay = 1;
+
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let completedSeries = {};
+
+    // ==================== INICIALIZACIÓN ====================
+    function init() {
+      loadProgress();
+      checkDailyReset();
+      renderDayNav();
+      renderWorkout();
+      updateCurrentDayName();
+    }
+
+    // ==================== NAVEGACIÓN DE DÍAS ====================
+    function renderDayNav() {
+      const nav = document.getElementById('dayNav');
+      let html = '';
+      
+      for (let i = 1; i <= 6; i++) {
+        const routine = ROUTINE[i];
+        const isActive = currentDay === i;
+        const isRest = routine.isRest;
+        
+        html += `
+          <button class="day-tab ${isActive ? 'active' : ''} ${isRest ? 'rest-day' : ''}" 
+                  onclick="changeDay(${i})">
+            <span class="day-tab-short">${DAY_NAMES[i]}</span>
+            <span class="day-tab-type">${routine.type}</span>
+          </button>
+        `;
+      }
+      
+      nav.innerHTML = html;
+    }
+
+    function changeDay(day) {
+      currentDay = day;
+      renderDayNav();
+      renderWorkout();
+      updateCurrentDayName();
+    }
+
+    function updateCurrentDayName() {
+      document.getElementById('currentDayName').textContent = DAY_FULL_NAMES[currentDay];
+    }
+
+    // ==================== RENDERIZADO DE RUTINA ====================
+    function renderWorkout() {
+      const workout = ROUTINE[currentDay];
+      const content = document.getElementById('workoutContent');
+      
+      if (workout.isRest) {
+        content.innerHTML = `
+          <div class="rest-day-card fade-in">
+            <div class="rest-day-icon">😴💤</div>
+            <div class="rest-day-title">Día de Descanso</div>
+            <div class="rest-day-message">
+              Tu cuerpo necesita recuperarse para crecer más fuerte.<br>
+              Descansa, hidrátate y come bien. 🥗💧
+            </div>
+          </div>
+        `;
+        document.querySelector('.timer-card').style.display = 'none';
+        document.querySelector('.progress-card').style.display = 'none';
+        return;
+      }
+      
+      document.querySelector('.timer-card').style.display = 'block';
+      document.querySelector('.progress-card').style.display = 'block';
+      
+      let html = `
+        <div class="workout-title fade-in">
+          <span class="workout-title-icon">${workout.icon}</span>
+          <span>${workout.name}</span>
+        </div>
+      `;
+      
+      workout.exercises.forEach((exercise, exIdx) => {
+        const completedCount = countCompletedSeries(exIdx);
+        const isCompleted = completedCount === 4;
+        
+        html += `
+          <div class="exercise-card fade-in ${isCompleted ? 'completed' : ''}" style="animation-delay: ${exIdx * 0.05}s">
+            <div class="exercise-header">
+              <div class="exercise-number">${exIdx + 1}</div>
+              <div class="exercise-info">
+                <div class="exercise-name">${exercise.name}</div>
+                <div class="exercise-target">${exercise.target}</div>
+              </div>
+              <div class="exercise-check">✓</div>
+            </div>
+            <div class="series-grid">
+              ${SERIES_REPS.map((reps, serieIdx) => {
+                const key = `${currentDay}-${exIdx}-${serieIdx}`;
+                const isDone = completedSeries[key] || false;
+                return `
+                  <div class="serie-item ${isDone ? 'done' : ''}" onclick="toggleSerie('${key}')">
+                    <div class="serie-checkmark">✓</div>
+                    <div class="serie-number">Serie ${serieIdx + 1}</div>
+                    <div class="serie-reps">${reps}</div>
+                    <div class="serie-label">reps</div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+      
+      content.innerHTML = html;
+      updateProgress();
+    }
+
+    function countCompletedSeries(exIdx) {
+      let count = 0;
+      for (let i = 0; i < 4; i++) {
+        if (completedSeries[`${currentDay}-${exIdx}-${i}`]) count++;
+      }
+      return count;
+    }
+
+    // ==================== TOGGLE SERIES ====================
+    function toggleSerie(key) {
+      completedSeries[key] = !completedSeries[key];
+      saveProgress();
+      renderWorkout();
+      
+      if (completedSeries[key]) {
+        startTimer(90);
+        
+        // Vibración táctil
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      }
+      
+      checkCompletion();
+    }
+
+    // ==================== CRONÓMETRO ====================
+    function startTimer(seconds) {
+      stopTimer();
+      timerSeconds = seconds;
+      updateTimerDisplay();
+      document.getElementById('restOverlay').classList.add('active');
+      document.getElementById('timerDisplay').classList.add('running');
+      
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+        
+        if (timerSeconds <= 0) {
+          stopTimer();
+          if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200, 100, 200]);
+          }
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      document.getElementById('restOverlay').classList.remove('active');
+      document.getElementById('timerDisplay').classList.remove('running');
+      timerSeconds = 0;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      document.getElementById('timerDisplay').textContent = timeStr;
+      document.getElementById('restTime').textContent = timeStr;
+    }
+
+    // ==================== PROGRESO ====================
+    function updateProgress() {
+      const workout = ROUTINE[currentDay];
+      if (workout.isRest) return;
+      
+      const totalSeries = workout.exercises.length * 4;
+      let completed = 0;
+      
+      for (let i = 0; i < workout.exercises.length; i++) {
+        for (let j = 0; j < 4; j++) {
+          if (completedSeries[`${currentDay}-${i}-${j}`]) completed++;
+        }
+      }
+      
+      const percent = Math.round((completed / totalSeries) * 100);
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('progressValue').textContent = `${percent}% (${completed}/${totalSeries})`;
+    }
+
+    function checkCompletion() {
+      const workout = ROUTINE[currentDay];
+      if (workout.isRest) return;
+      
+      const totalSeries = workout.exercises.length * 4;
+      let completed = 0;
+      
+      for (let i = 0; i < workout.exercises.length; i++) {
+        for (let j = 0; j < 4; j++) {
+          if (completedSeries[`${currentDay}-${i}-${j}`]) completed++;
+        }
+      }
+      
+      if (completed === totalSeries) {
+        setTimeout(() => {
+          document.getElementById('celebration').classList.add('active');
+          if (navigator.vibrate) {
+            navigator.vibrate([100, 50, 100, 50, 200]);
+          }
+        }, 300);
+      }
+    }
+
+    function closeCelebration() {
+      document.getElementById('celebration').classList.remove('active');
+    }
+
+    // ==================== PERSISTENCIA ====================
+    function saveProgress() {
+      localStorage.setItem('gymTrackerProgress', JSON.stringify(completedSeries));
+      localStorage.setItem('gymTrackerDate', new Date().toDateString());
+    }
+
+    function loadProgress() {
+      const saved = localStorage.getItem('gymTrackerProgress');
+      if (saved) {
+        completedSeries = JSON.parse(saved);
+      }
+    }
+
+    function checkDailyReset() {
+      const lastDate = localStorage.getItem('gymTrackerDate');
+      const today = new Date().toDateString();
+      
+      if (lastDate !== today) {
+        completedSeries = {};
+        saveProgress();
+      }
+    }
+
+    function resetDayProgress() {
+      if (confirm('¿Reiniciar el progreso de hoy?')) {
+        const workout = ROUTINE[currentDay];
+        if (!workout.isRest) {
+          for (let i = 0; i < workout.exercises.length; i++) {
+            for (let j = 0; j < 4; j++) {
+              delete completedSeries[`${currentDay}-${i}-${j}`];
+            }
+          }
+          saveProgress();
+          renderWorkout();
+        }
+      }
+    }
+
+    // ==================== INICIAR APP ====================
+    init();
+  </script>
+</body>
+</html>
