@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <title>🛒 Comparador de Productos</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --accent: #16a34a;
+      --danger: #ef4444;
+      --border: #e5e7eb;
+      --ring: rgba(37, 99, 235, 0.2);
+      --accent-bg: rgba(22, 163, 74, 0.1);
+      --accent-border: rgba(22, 163, 74, 0.3);
+      --radius: 14px;
+      --shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --card: #0e1628;
+        --text: #e5e7eb;
+        --muted: #9aa4b2;
+        --border: #182033;
+        --shadow: 0 1px 2px rgba(0,0,0,0.5);
+        --ring: rgba(59,130,246,0.25);
+        --accent-bg: rgba(22, 163, 74, 0.15);
+        --accent-border: rgba(22, 163, 74, 0.4);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      padding: 24px;
+    }
+
+    .wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 20px;
+    }
+    .header {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px;
+    }
+    .title {
+      font-weight: 700; letter-spacing: -0.02em;
+      font-size: clamp(18px, 2.2vw, 22px);
+    }
+    .field { display: grid; gap: 8px; }
+    label { color: var(--muted); font-size: 14px; font-weight: 500; }
+    input[type="text"], input[type="number"] {
+      width: 100%; padding: 14px 14px;
+      border: 1px solid var(--border); background: transparent;
+      border-radius: 12px; color: var(--text);
+      font-size: 16px; line-height: 1; outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    input::placeholder { color: #9aa3af80; }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--ring); }
+    .note { font-size: 12px; color: var(--muted); }
+
+    .productos { display: grid; gap: 16px; }
+    .producto {
+      background: transparent;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.25s ease;
+    }
+    .producto.mejor {
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+      border-width: 2px;
+    }
+    .producto h3 {
+      color: var(--text);
+      margin-bottom: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 0;
+    }
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .resultado-comparador {
+      background: transparent;
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .precio-unidad {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .unidad-texto {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .mejor .resultado-comparador {
+      background: var(--accent-bg);
+      border-color: var(--accent);
+      border-width: 2px;
+    }
+    .mejor .precio-unidad {
+      color: var(--accent);
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .footer { margin-top: 12px; text-align: center; font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 500px) {
+      .input-group { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <section class="card">
+      <div class="header">
+        <div class="title">🛒 Comparador de Productos</div>
+      </div>
+      <p class="note" style="margin-bottom: 16px;">Descubre cuál producto tiene mejor precio por gramo</p>
+
+      <div class="productos">
+        <!-- Producto 1 -->
+        <div class="producto" id="producto1">
+          <h3>Producto 1</h3>
+          <div class="input-group">
+            <div class="field">
+              <label for="cantidad1">Cantidad</label>
+              <input type="number" id="cantidad1" placeholder="250" value="250" min="0" step="any">
+            </div>
+            <div class="field">
+              <label for="precio1">Precio (S/)</label>
+              <input type="number" id="precio1" placeholder="10" value="10" min="0" step="0.01">
+            </div>
+          </div>
+          <div class="resultado-comparador">
+            <div class="precio-unidad" id="resultado1">S/ 0.00</div>
+            <div class="unidad-texto">por gramo</div>
+          </div>
+        </div>
+
+        <!-- Producto 2 -->
+        <div class="producto" id="producto2">
+          <h3>Producto 2</h3>
+          <div class="input-group">
+            <div class="field">
+              <label for="cantidad2">Cantidad</label>
+              <input type="number" id="cantidad2" placeholder="500" value="500" min="0" step="any">
+            </div>
+            <div class="field">
+              <label for="precio2">Precio (S/)</label>
+              <input type="number" id="precio2" placeholder="60" value="60" min="0" step="0.01">
+            </div>
+          </div>
+          <div class="resultado-comparador">
+            <div class="precio-unidad" id="resultado2">S/ 0.00</div>
+            <div class="unidad-texto">por gramo</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">Tus datos no se guardan. Dark mode automático.</p>
+  </div>
+
+  <script>
+    const cantidad1 = document.getElementById('cantidad1');
+    const precio1 = document.getElementById('precio1');
+    const cantidad2 = document.getElementById('cantidad2');
+    const precio2 = document.getElementById('precio2');
+    const resultado1 = document.getElementById('resultado1');
+    const resultado2 = document.getElementById('resultado2');
+    const producto1Div = document.getElementById('producto1');
+    const producto2Div = document.getElementById('producto2');
+
+    function calcularYComparar() {
+      const cant1 = parseFloat(cantidad1.value) || 0;
+      const prec1 = parseFloat(precio1.value) || 0;
+      const cant2 = parseFloat(cantidad2.value) || 0;
+      const prec2 = parseFloat(precio2.value) || 0;
+
+      const precioUnidad1 = cant1 > 0 ? prec1 / cant1 : 0;
+      const precioUnidad2 = cant2 > 0 ? prec2 / cant2 : 0;
+
+      resultado1.textContent = `S/ ${precioUnidad1.toFixed(4)}`;
+      resultado2.textContent = `S/ ${precioUnidad2.toFixed(4)}`;
+
+      producto1Div.classList.remove('mejor');
+      producto2Div.classList.remove('mejor');
+
+      const badge1 = producto1Div.querySelector('.badge');
+      const badge2 = producto2Div.querySelector('.badge');
+      if (badge1) badge1.remove();
+      if (badge2) badge2.remove();
+
+      if (precioUnidad1 > 0 && precioUnidad2 > 0) {
+        if (precioUnidad1 < precioUnidad2) {
+          producto1Div.classList.add('mejor');
+          const badge = document.createElement('div');
+          badge.className = 'badge';
+          badge.textContent = '✓ Mejor opción';
+          producto1Div.querySelector('.resultado-comparador').appendChild(badge);
+        } else if (precioUnidad2 < precioUnidad1) {
+          producto2Div.classList.add('mejor');
+          const badge = document.createElement('div');
+          badge.className = 'badge';
+          badge.textContent = '✓ Mejor opción';
+          producto2Div.querySelector('.resultado-comparador').appendChild(badge);
+        }
+      }
+    }
+
+    cantidad1.addEventListener('input', calcularYComparar);
+    precio1.addEventListener('input', calcularYComparar);
+    cantidad2.addEventListener('input', calcularYComparar);
+    precio2.addEventListener('input', calcularYComparar);
+
+    calcularYComparar();
+  </script>
+</body>
+</html>
